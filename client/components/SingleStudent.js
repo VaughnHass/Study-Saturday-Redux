@@ -1,4 +1,7 @@
 import React from 'react';
+import {fetchStudent} from '../redux/store';
+import {connect} from 'react-redux'
+import { withRouter } from "react-router";
 
 const avgGrade = (tests) => {
   return Math.round(
@@ -6,39 +9,22 @@ const avgGrade = (tests) => {
   );
 };
 
-const DUMMY_DATA = {
-  id: 1,
-  fullName: "Student McDummydata",
-  firstName: "Student",
-  lastName: "McDummydata",
-  email: "sm@dummydata.com",
-  tests: [
-    {
-      id: 1,
-      subject: "Computer Science",
-      grade: 45,
-    },
-    {
-      id: 6,
-      subject: "Art",
-      grade: 60,
-    },
-    {
-      id: 12,
-      subject: "ullam",
-      grade: 45,
-    },
-  ],
-};
-
 class SingleStudent extends React.Component {
   constructor(props) {
     super(props);
   }
+  
+  componentDidMount() {
+    const id = this.props.match.params.id;
+    console.log("The ID found is: " + id);
+    this.props.loadStudent(id);
+  }
 
   render() {
-    const student = DUMMY_DATA;
-    const hasTests = student.tests.length;
+    const {student} = this.props;
+    console.log("The student found is: " + Object.getOwnPropertyNames(student));
+    
+    const hasTests = student.tests && student.tests.length;
 
     return (
       <div>
@@ -75,4 +61,12 @@ class SingleStudent extends React.Component {
   }
 };
 
-export default SingleStudent;
+const mapStateToProps = (state) => ({
+  student: state.student
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  loadStudent: (id) => dispatch(fetchStudent(id))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(SingleStudent);
